@@ -18,6 +18,8 @@ public class Main {
         k1.wyplata(5000);
         k2.wyplata(2000);
         k1.wyplata(1000);
+        k2.wplata(2000);
+        k2.wyplata(2000);
 //        k1.przelewWychodzacy(1000, k2);
 //        k1.przelewWychodzacy(1000, k2);
 //        k1.przelewWychodzacy(1000, k2);
@@ -41,49 +43,55 @@ public class Main {
         List<KontoBankowe> kontoBankoweList = new ArrayList<>();
         kontoBankoweList.add(k1);
         kontoBankoweList.add(k2);
+        kontoBankoweList.add(k3);
+        kontoBankoweList.add(k4);
 
         // ------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------------STREAMS ----------------------------------------------
         System.out.print("Najwięcej operacji: ");
         final String mostOperations = kontoBankoweList
                 .stream()
-                .max((n1, n2) -> n1.getHistories().size() > n2.getHistories().size() ? 1 : -1)
+                .max(Comparator.comparingInt(n -> n.getHistories().size()))
                 .map(KontoBankowe::getNazwa).orElse(null);
         System.out.println(mostOperations);
 
         System.out.print("Najwiecej wypłat: ");
         final String mostNumberWyplata = kontoBankoweList.stream()
-                .max((n1,n2) -> n1.getHistories().stream().filter(n->n.getOperationType()==OperationType.WYPLATA).toList().size()
-                        >n2.getHistories().stream().filter(a->a.getOperationType()==OperationType.WYPLATA).toList().size() ? 1: -1)
+                .max((n1,n2) -> Integer.compare(n1.getHistories().stream().filter(n->n.getOperationType()==OperationType.WYPLATA).toList().size()
+                        ,n2.getHistories().stream().filter(a->a.getOperationType()==OperationType.WYPLATA).toList().size()))
                 .map(KontoBankowe::getNazwa).orElse(null);
         System.out.println(mostNumberWyplata);
         System.out.print("Sumarycznie wplacono najwięcej kasy: ");
         final String summaryWplataMax = kontoBankoweList.stream()
-                .max((n1, n2) ->
+                .max((n1, n2) -> Integer.compare(
                         n1.getHistories()
                                 .stream()
                                 .filter(n -> n.getOperationType() == OperationType.WPLATA)
-                                .map(History::getSum).reduce(0, (a, b) -> a + b)
-                                > n2.getHistories()
+                                .map(History::getSum).reduce(0, Integer::sum)
+                                        ,
+                                n2.getHistories()
                                 .stream()
                                 .filter(operation -> operation.getOperationType() == OperationType.WPLATA).map(History::getSum)
-                                .reduce(0, (a1, b1) -> a1 + b1) ? 1 : -1).map(KontoBankowe::getNazwa).orElse(null);
+                                .reduce(0, Integer::sum)
+                )).map(KontoBankowe::getNazwa).orElse(null);
         System.out.println(summaryWplataMax);
         System.out.print("Sumarycznie wyplacono najwięcej kasy: ");
         final String summaryWyplataMax = kontoBankoweList.stream()
-                .max((n1, n2) ->
+                .max((n1, n2) -> Integer.compare(
                         n1.getHistories()
                                 .stream()
                                 .filter(n -> n.getOperationType() == OperationType.WYPLATA)
-                                .map(History::getSum).reduce(0, (a, b) -> a + b)
-                                > n2.getHistories()
+                                .map(History::getSum).reduce(0, Integer::sum)
+                                ,
+                                n2.getHistories()
                                 .stream()
                                 .filter(operation -> operation.getOperationType() == OperationType.WYPLATA).map(History::getSum)
-                                .reduce(0, (a1, b1) -> a1 + b1) ? 1 : -1).map(KontoBankowe::getNazwa).orElse(null);
+                                .reduce(0, Integer::sum))).map(KontoBankowe::getNazwa).orElse(null);
         System.out.println(summaryWyplataMax);
 
         UrzadSkarbowy urzadSkarbowy = new UrzadSkarbowy();
         urzadSkarbowy.kontroluj(kontoBankoweList, 5, 2023);
         k2.wplata(100);
+        urzadSkarbowy.zlozWyjasnienie("dupa",k4);
     }
 }

@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public class UrzadSkarbowy {
     private String nazwa;
     private String adres;
-
     public void kontroluj(List<KontoBankowe> kontoBankoweList, int month, int year) {
         final Integer wyplataSummary = kontoBankoweList
                 .stream().map(
@@ -66,7 +65,7 @@ public class UrzadSkarbowy {
         if (k.checkIfBlocked()) {
             Random rand = new Random();
             int n = rand.nextInt(100);
-            if (n > 94) {
+            if (tresc.length()==0 || n > 94) {
                 System.out.println("Konto nadal zablokowane");
             } else {
                 k.setZablokowane(false);
