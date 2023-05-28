@@ -165,33 +165,6 @@ public class KontoBankowe {
         }
     }
 
-    public int compareSize(KontoBankowe other) {
-        if (this.getHistories().size() > other.getHistories().size()) {
-            return 1;
-        } else if (this.getHistories().size() == other.getHistories().size()) {
-            Random rand = new Random();
-            int n = rand.nextInt(2) - 1;
-            return n;
-        } else {
-            return -1;
-        }
-    }
-
-    public int compareWyplata(KontoBankowe other) {
-        int counterThis = 0;
-        int counterOther = 0;
-        for (History history : this.getHistories()) {
-            if (history.getOperationType() == OperationType.WYPLATA) {
-                counterThis += 1;
-            }
-        }
-        for (History history : other.getHistories()) {
-            if (history.getOperationType() == OperationType.WYPLATA) {
-                counterOther += 1;
-            }
-        }
-        return Integer.compare(counterThis, counterOther);
-    }
 
 }
 
