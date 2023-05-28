@@ -3,32 +3,37 @@ import BankAccount.KontoBankowe;
 import BankAccount.OperationType;
 import UrzadSkarbowy.UrzadSkarbowy;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 public class Main {
     public static void main(String[] args) {
-        KontoBankowe k1 = new KontoBankowe("Przekorzystne", "PekaoSa", 123563213, 59092226728L, 2, 100000, false);
-        KontoBankowe k2 = new KontoBankowe("Mobilne", "Santander", 124322432, 59092226728L, 5, 5000, false);
-        KontoBankowe k3 = new KontoBankowe("Oszczednosciowe", "pkoBP", 758283835, 59092226728L, 10, 2500, false);
-        KontoBankowe k4 = new KontoBankowe("Walutowe", "mBank", 4325234, 59092226728L, 3, 1000, true);
+        KontoBankowe k1 = new KontoBankowe("Przekorzystne", "PekaoSa", 123563213, "20092226728", 2, 100000, false, "");
+        KontoBankowe k2 = new KontoBankowe("Mobilne", "Santander", 124322432, "18092226728", 5, 5000, false, "");
+        KontoBankowe k3 = new KontoBankowe("Oszczednosciowe", "pkoBP", 758283835, "18092226728", 10, 2500, false, "");
+        KontoBankowe k4 = new KontoBankowe("Walutowe", "mBank", 4325234, "18092226728", 3, 1000, true, "");
         k4.wyplata(1200);
         System.out.println(k4.getHistories());
-        k1.wyplata(200);
-        k1.wplata(5000);
+//        k1.wyplata(200);
+//        k1.wplata(5000);
         k1.przelewWychodzacy(1000, k2);
-        k1.wplata(800);
-        k1.wplata(10000);
-        k2.wplata(5000);
-        k2.wplata(10000);
-        k2.wyplata(12000);
-        k2.wplata(5000);
-        k2.wyplata(3500);
-        k2.wyplata(1500);
+        k1.przelewWychodzacy(1000, k2);
+        k1.przelewWychodzacy(1000, k2);
+//        k2.wplata(100);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k1.wplata(10000);
+//        k2.wplata(20000);
+//        k2.wyplata(1000);
+//        k2.wyplata(1000);
+        k2.wyplata(1000);
+
+
         List<KontoBankowe> kontoBankoweList = new ArrayList<>();
         kontoBankoweList.add(k1);
         kontoBankoweList.add(k2);
@@ -36,65 +41,43 @@ public class Main {
         // ------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------------STREAMS ----------------------------------------------
         //  - bylo najwiecej operacji
-        final Integer integer = kontoBankoweList
+        final String s = kontoBankoweList
                 .stream()
-                .map(
-                        n -> n.getHistories().size())
-                .max(Comparator.comparing(Integer::valueOf)).get();
-        System.out.println(integer);
+                .max(KontoBankowe::compareSize)
+                .map(KontoBankowe::getNazwa).orElse(null);
+        System.out.print("Najwięcej operacji: ");
+        System.out.println(s);
         //  - bylo najwiecej wyplat
-        final Integer integer1 = kontoBankoweList.stream()
-                .map(
-                        n -> n.getHistories()
-                                .stream()
-                                .filter(a -> a.getOperationType() == OperationType.WYPLATA)
-                                .toList().size())
-                .max(Comparator.comparing(Integer::valueOf)).get();
-        System.out.println(integer1);
+        final String mostNumberWyplata = kontoBankoweList.stream()
+                .max(KontoBankowe::compareWyplata)
+                .map(KontoBankowe::getNazwa).orElse(null);
+        System.out.print("Najwiecej wypłat: ");
+        System.out.println(mostNumberWyplata);
         //- na ktore wplacono sumarycznie najwiecej kasy
-        final Integer integer2 = kontoBankoweList
+        final Integer summaryWplataMax = kontoBankoweList
                 .stream()
                 .map(
                         n -> n.getHistories()
                                 .stream()
                                 .filter(a -> a.getOperationType() == OperationType.WPLATA)
                                 .map(History::getSum).reduce(0,
-                                        (a, b) -> a + b))
+                                        Integer::sum))
                 .max(Comparator.comparing(Integer::valueOf))
                 .get();
-        System.out.println(integer2);
+        System.out.println(summaryWplataMax);
         //- z ktorego sumarycznie wyplacono najwiecej kasy
-        final Integer integer3 = kontoBankoweList
+        final Integer summaryWyplataMax = kontoBankoweList
                 .stream().map(
                         n -> n.getHistories()
                                 .stream()
                                 .filter(a -> a.getOperationType() == OperationType.WYPLATA)
                                 .map(History::getSum)
-                                .reduce(0, (a, b) -> a + b))
+                                .reduce(0, Integer::sum))
                 .max(Comparator.comparing(Integer::valueOf)).get();
-        System.out.println(integer3);
-        UrzadSkarbowy urzadSkarbowy = new UrzadSkarbowy();
-        urzadSkarbowy.zlozWyjasnienie("Sraka",k4);
+        System.out.println(summaryWyplataMax);
 
+        UrzadSkarbowy urzadSkarbowy = new UrzadSkarbowy();
+        urzadSkarbowy.kontroluj(kontoBankoweList, 5, 2023);
+        k2.wplata(100);
     }
-//    Zadanie 02.
-//
-//    Stworz klase UrzadSkarbowy (nazwa, adres)
-//
-//    ktory kontroluje konta bankowe.
-//
-//    kontrola odbywa sie co miesiac tzn:
-//
-//    List<KontoBankowe> zablokowane = urzad.kontroluj(listaKont, Month.JANUARY, 2020)
-//
-//    mowi ze bedziemy kontrolowac tylko operacje wykonane w styczniu 2020.
-//
-//    i tak:
-//
-//            - jesli w danym okresie kontrolnym suma wplat na konto jest mniejsza niz suma wyplat - to blokujemy konto z opisem "nieznane dochody"
-//
-//            - jesli w danym okresie kontrolnym pojawi sie transakcja na kwote wieksza niz 15.000 pln - to blokujemy konto z opisem "niezglosozna transakcja"
-//
-//            - jesli wiek klienta jest mniejsz niz 18 lat i wykazuje on conajmniej 3 przelewy wchodzace na kwote min 1500 pln - to blokujemy konto z opisem "słup małoletni"
-//
 }

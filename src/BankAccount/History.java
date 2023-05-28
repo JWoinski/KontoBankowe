@@ -1,10 +1,9 @@
 package BankAccount;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class History {
-    private KontoBankowe kontoBankowe;
+    private final KontoBankowe kontoBankowe;
     private LocalDate dateTime;
     private OperationType operationType;
     private int sum;
@@ -30,11 +29,6 @@ public class History {
 
     public int getSum() {
         return sum;
-    }
-
-    public int compareTo(History h2) {
-
-        return 1;
     }
 
     @Override
