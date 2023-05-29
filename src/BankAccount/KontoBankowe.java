@@ -2,18 +2,16 @@ package BankAccount;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Random;
 
 class LackOfAccountFundsException extends Exception {
-    public LackOfAccountFundsException(String s) {
-        // Call constructor of parent Exception
-        super(s);
+    public LackOfAccountFundsException() {
+        super("Brak wystarczających środków na koncie");
     }
 }
 
 class BlockedAccountException extends Exception {
-    public BlockedAccountException(String s) {
-        super(s);
+    public BlockedAccountException() {
+        super("Konto zablokowane");
     }
 }
 
@@ -91,77 +89,55 @@ public class KontoBankowe {
     public void wyplata(int withDraw) {
         try {
             if (checkIfBlocked()) {
-                throw new BlockedAccountException("Konto zablokowane");
+                throw new BlockedAccountException();
             }
-
-        } catch (BlockedAccountException e) {
+            if (getSaldo() < withDraw) {
+                throw new LackOfAccountFundsException();
+            }
+            this.saldo -= withDraw;
+            addHistory(new History(this, now, OperationType.WYPLATA, withDraw));
+        } catch (BlockedAccountException | LackOfAccountFundsException e) {
             System.out.println(e.getMessage());
-        }
-        if (!checkIfBlocked()) {
-            try {
-                if (getSaldo() < withDraw) {
-                    throw new LackOfAccountFundsException("Brak wystarczających środków na koncie");
-                }
-            } catch (LackOfAccountFundsException e) {
-                System.out.println(e.getMessage());
-            }
-            if (!checkIfBlocked() && getSaldo() >= withDraw) {
-                this.saldo -= withDraw;
-                addHistory(new History(this, now, OperationType.WYPLATA, withDraw));
-            }
         }
     }
 
     public void przelewWychodzacy(int sum, KontoBankowe k) {
         try {
             if (checkIfBlocked()) {
-                throw new BlockedAccountException("Konto zablokowane");
+                throw new BlockedAccountException();
             }
-
-        } catch (BlockedAccountException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
             if (getSaldo() < sum) {
-                throw new LackOfAccountFundsException("Brak wystarczających środków na koncie");
+                throw new LackOfAccountFundsException();
             }
-        } catch (LackOfAccountFundsException e) {
-            System.out.println(e.getMessage());
-        }
-        if (!checkIfBlocked() && getSaldo() >= sum) {
             this.saldo -= sum;
             przelewWchodzacy(sum, k);
             addHistory(new History(this, now, OperationType.PRZELEW_WYCHODZACY, sum));
+        } catch (BlockedAccountException | LackOfAccountFundsException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private void przelewWchodzacy(int sum, KontoBankowe k) {
         try {
             if (checkIfBlocked()) {
-                throw new BlockedAccountException("Konto zablokowane");
+                throw new BlockedAccountException();
             }
-
-        } catch (BlockedAccountException e) {
-            System.out.println(e.getMessage());
-        }
-        if (!checkIfBlocked()) {
             k.saldo += sum;
             k.addHistory(new History(k, now, OperationType.PRZELEW_WCHODZACY, sum));
+        } catch (BlockedAccountException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     public void wplata(int sum) {
         try {
             if (checkIfBlocked()) {
-                throw new BlockedAccountException("Konto zablokowane");
+                throw new BlockedAccountException();
             }
-
-        } catch (BlockedAccountException e) {
-            System.out.println(e.getMessage());
-        }
-        if (!checkIfBlocked()) {
             this.saldo += sum;
             addHistory(new History(this, now, OperationType.WPLATA, sum));
+        } catch (BlockedAccountException e) {
+            System.out.println(e.getMessage());
         }
     }
 
