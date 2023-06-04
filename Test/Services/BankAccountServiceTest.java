@@ -1,27 +1,16 @@
 package Services;
 
-import Enums.OperationType;
 import Models.BankAccount;
-import Models.History;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BankAccountServiceTest {
 
-    @BeforeEach
-    public void setUp(){
-
-    }
     @Test
-    public void mostOperations(){
+    void mostNumberOfOperations() {
         BankAccount bankAccount1 = new BankAccount("Przekorzystne", "PekaoSa", "1111", "00283100591", 2, 100000, false, "");
         BankAccount bankAccount2 = new BankAccount("Mobilne", "Santander", "11112", "78051175761", 5, 50000, false, "");
         BankAccount bankAccount3 = new BankAccount("Oszczednosciowe", "pkoBP", "11113", "71061129748", 10, 2500, false, "");
@@ -53,10 +42,10 @@ class BankAccountServiceTest {
         final String actual = BankAccountService.mostNumberOfOperations(bankAccounts);
         String expected = "Mobilne";
         Assertions.assertEquals(expected,actual);
-
     }
+
     @Test
-    public void maxWyplata(){
+    void mostNumberOfWithdrawn() {
         BankAccount bankAccount1 = new BankAccount("Przekorzystne", "PekaoSa", "1111", "00283100591", 2, 100000, false, "");
         BankAccount bankAccount2 = new BankAccount("Mobilne", "Santander", "11112", "78051175761", 5, 50000, false, "");
         BankAccount bankAccount3 = new BankAccount("Oszczednosciowe", "pkoBP", "11113", "71061129748", 10, 2500, false, "");
@@ -69,16 +58,17 @@ class BankAccountServiceTest {
 
         bankAccount1.wyplata(300);
         bankAccount2.wyplata(400);
+        bankAccount2.wyplata(200);
         bankAccount3.wyplata(5000);
         bankAccount4.wyplata(400);
 
-        final String expected = "Walutowe";
+        final String expected = "Mobilne";
         final String actual = BankAccountService.summaryWyplataMax(bankAccounts);
         Assertions.assertEquals(expected,actual);
     }
-    @Test
-    public void maxWplata(){
 
+    @Test
+    void summaryWplataMax() {
         BankAccount bankAccount1 = new BankAccount("Przekorzystne", "PekaoSa", "1111", "00283100591", 2, 100000, false, "");
         BankAccount bankAccount2 = new BankAccount("Mobilne", "Santander", "11112", "78051175761", 5, 50000, false, "");
         BankAccount bankAccount3 = new BankAccount("Oszczednosciowe", "pkoBP", "11113", "71061129748", 10, 2500, false, "");
@@ -101,8 +91,9 @@ class BankAccountServiceTest {
         final String expected = "Oszczednosciowe";
         final String actual = BankAccountService.summaryWyplataMax(bankAccounts);
     }
+
     @Test
-    public void mostWithdrawns(){
+    void summaryWyplataMax() {
         BankAccount bankAccount1 = new BankAccount("Przekorzystne", "PekaoSa", "1111", "00283100591", 2, 100000, false, "");
         BankAccount bankAccount2 = new BankAccount("Mobilne", "Santander", "11112", "78051175761", 5, 50000, false, "");
         BankAccount bankAccount3 = new BankAccount("Oszczednosciowe", "pkoBP", "11113", "71061129748", 10, 2500, false, "");
@@ -117,15 +108,15 @@ class BankAccountServiceTest {
         bankAccount1.wyplata(100);
         bankAccount1.wyplata(100);
         bankAccount1.wyplata(100);
+        //400
 
-
         bankAccount2.wyplata(100);
         bankAccount2.wyplata(100);
         bankAccount2.wyplata(100);
         bankAccount2.wyplata(100);
         bankAccount2.wyplata(100);
-
-
+        //500
+        // Porównuje dwa pierwsze i potem olewa sprawe
 
         bankAccount3.wyplata(100);
         bankAccount3.wyplata(100);
@@ -134,15 +125,14 @@ class BankAccountServiceTest {
         bankAccount3.wplata(100);
         bankAccount3.wplata(100);
         bankAccount3.wplata(100);
-
+        //700
 
 
         bankAccount4.wyplata(100);
 
-        final String expected = "Mobilne";
+        final String expected = "Oszczednosciowe";
         final String actual = BankAccountService.mostNumberOfWithdrawn(bankAccounts);
 
         Assertions.assertEquals(expected,actual);
-
     }
 }

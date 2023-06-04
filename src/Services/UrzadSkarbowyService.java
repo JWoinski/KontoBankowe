@@ -31,7 +31,7 @@ public class UrzadSkarbowyService {
 
     }
 
-    public static int compareWplataAndWyplata(BankAccount bankAccount, int month, int year) {
+    static int compareWplataAndWyplata(BankAccount bankAccount, int month, int year) {
         return Integer
                 .compare(getAmountOfOperations(bankAccount, OperationType.WPLATA, month, year),
                         getAmountOfOperations(bankAccount, OperationType.WYPLATA, month, year));
@@ -45,7 +45,7 @@ public class UrzadSkarbowyService {
         return bankAccount.getHistories().stream().anyMatch(a -> a.getAmount() > 15000 && dateBetweenPeriod(a, month, year));
     }
 
-    public static int getYearsOld(String pesel) {
+    static int getYearsOld(String pesel) {
         int yearsOld = 0;
         final int getMonth = Integer.parseInt(pesel.substring(2, 4));
         final int getYear = Integer.parseInt(pesel.substring(0, 2));
